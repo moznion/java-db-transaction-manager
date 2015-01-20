@@ -2,20 +2,27 @@ package net.moznion.transaction.manager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+
 public class TransactionManager {
 	private final Connection connection;
-	private final List<Savepoint> savepoints;
+
 	private Boolean originalAutoCommitStatus = null;
-	private int activeTransactionCount = 0;
 	private int rollbackedInNestedTransaction = 0;
 
+	@Getter
+	private List<TransactionTrace> activeTransactions;
+
 	public TransactionManager(Connection connection) {
+		if (connection == null) {
+			throw new IllegalArgumentException("connection must not be null");
+		}
+
 		this.connection = connection;
-		savepoints = new ArrayList<>();
+		activeTransactions = new ArrayList<>();
 	}
 
 	public void txnBegin() throws SQLException {
@@ -24,14 +31,28 @@ public class TransactionManager {
 	}
 
 	public void txnBegin(boolean originalAutoCommitStatus) throws SQLException {
-		if (originalAutoCommitStatus) {
+		if (activeTransactions.size() == 0 && originalAutoCommitStatus) {
 			connection.setAutoCommit(false); // Enable transaction
 		}
-		activeTransactionCount++;
+
+		TransactionTrace transactionTrace = null;
+		Thread currentThread = Thread.currentThread();
+		StackTraceElement[] stackTraceElements = currentThread.getStackTrace();
+		if (stackTraceElements.length > 3) {
+			StackTraceElement caller = stackTraceElements[3]; // XXX 3 is magical, but it points caller stack
+			transactionTrace = TransactionTrace.builder()
+				.className(caller.getClassName())
+				.fileName(caller.getFileName())
+				.methodName(caller.getMethodName())
+				.lineNumber(caller.getLineNumber())
+				.threadId(currentThread.getId())
+				.build();
+		}
+		activeTransactions.add(transactionTrace);
 	}
 
 	public void txnCommit() throws SQLException {
-		if (activeTransactionCount <= 0) {
+		if (activeTransactions.size() <= 0) {
 			return;
 		}
 
@@ -39,27 +60,20 @@ public class TransactionManager {
 			throw new RuntimeException(); // TODO
 		}
 
-		activeTransactionCount--;
-		if (activeTransactionCount == 0) {
+		activeTransactions.remove(activeTransactions.size() - 1); // remove last item
+		if (activeTransactions.size() == 0) {
 			connection.commit();
 			txnEnd();
 		}
 	}
 
 	public void txnRollback() throws SQLException {
-		//		if (savepoints.isEmpty()) {
-		//			connection.rollback();
-		//		} else {
-		//			connection.rollback(savepoints.remove(0));
-		//			connection.commit();
-		//		}
-		if (activeTransactionCount <= 0) {
+		if (activeTransactions.size() <= 0) {
 			return;
 		}
 
-		activeTransactionCount--;
-
-		if (activeTransactionCount > 0) {
+		activeTransactions.remove(activeTransactions.size() - 1); // remove last item
+		if (activeTransactions.size() > 0) {
 			rollbackedInNestedTransaction++;
 		} else {
 			connection.rollback();
@@ -71,7 +85,7 @@ public class TransactionManager {
 		// turn back to original auto-commit mode
 		connection.setAutoCommit(originalAutoCommitStatus);
 
-		activeTransactionCount = 0;
+		activeTransactions = new ArrayList<>();
 		rollbackedInNestedTransaction = 0;
 	}
 
@@ -105,6 +119,16 @@ public class TransactionManager {
 
 		@Override
 		public void close() throws SQLException {
+			int numOfActiveTransactions = activeTransactions.size();
+			if (numOfActiveTransactions <= 0) {
+				return;
+			}
+
+			TransactionTrace currentTransactionTrace = activeTransactions.get(numOfActiveTransactions - 1);
+			if (Thread.currentThread().getId() != currentTransactionTrace.getThreadId()) {
+				return;
+			}
+
 			if (!isActioned) {
 				rollback();
 			}
