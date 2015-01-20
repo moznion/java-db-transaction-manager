@@ -82,7 +82,7 @@ public class BasicTest extends TestBase {
 		txnManager.txnBegin();
 		{
 			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
-			TransactionTrace ttrace = txnManager.getCurrentTransaction().get();
+			TransactionTraceInfo ttrace = txnManager.getCurrentTransaction().get();
 			assertEquals("net.moznion.transaction.manager.BasicTest", ttrace.getClassName());
 			assertEquals("BasicTest.java", ttrace.getFileName());
 			assertEquals("currentTransaction", ttrace.getMethodName());

@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter
-public class TransactionTrace {
+public class TransactionTraceInfo {
 	private final String className;
 	private final String fileName;
 	private final String methodName;
@@ -21,8 +21,8 @@ public class TransactionTrace {
 		private int lineNumber = 0;
 		private long threadId = 0;
 
-		public TransactionTrace build() {
-			return new TransactionTrace(this);
+		public TransactionTraceInfo build() {
+			return new TransactionTraceInfo(this);
 		}
 	}
 
@@ -30,7 +30,7 @@ public class TransactionTrace {
 		return new Builder();
 	}
 
-	private TransactionTrace(Builder b) {
+	private TransactionTraceInfo(Builder b) {
 		className = b.className;
 		fileName = b.fileName;
 		methodName = b.methodName;

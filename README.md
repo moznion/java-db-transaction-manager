@@ -1,7 +1,7 @@
-transaction-manager
+transaction-manager [![Build Status](https://travis-ci.org/moznion/java-transaction-manager.svg?branch=master)](https://travis-ci.org/moznion/java-transaction-manager)
 =============
 
-TBD
+Simply DB transaction manager for Java
 
 Synopsis
 ---

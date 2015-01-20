@@ -21,10 +21,10 @@ public class ActiveTransactionsTest extends TestBase {
 
 		try (TransactionScope txn1 = txnManager.new TransactionScope()) {
 			{
-				List<TransactionTrace> activeTransactions = txnManager.getActiveTransactions();
+				List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
 				assertEquals(1, activeTransactions.size());
 
-				TransactionTrace got = activeTransactions.get(0);
+				TransactionTraceInfo got = activeTransactions.get(0);
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
@@ -34,10 +34,10 @@ public class ActiveTransactionsTest extends TestBase {
 
 			try (TransactionScope txn2 = txnManager.new TransactionScope()) {
 				{
-					List<TransactionTrace> activeTransactions = txnManager.getActiveTransactions();
+					List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
 					assertEquals(2, activeTransactions.size());
 
-					TransactionTrace got = activeTransactions.get(1);
+					TransactionTraceInfo got = activeTransactions.get(1);
 					assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 					assertEquals(filename, got.getFileName());
 					assertEquals("proveActiveTransactions", got.getMethodName());
@@ -49,10 +49,10 @@ public class ActiveTransactionsTest extends TestBase {
 			}
 
 			{
-				List<TransactionTrace> activeTransactions = txnManager.getActiveTransactions();
+				List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
 				assertEquals(1, activeTransactions.size());
 
-				TransactionTrace got = activeTransactions.get(0);
+				TransactionTraceInfo got = activeTransactions.get(0);
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
@@ -62,10 +62,10 @@ public class ActiveTransactionsTest extends TestBase {
 
 			txnManager.txnBegin();
 			{
-				List<TransactionTrace> activeTransactions = txnManager.getActiveTransactions();
+				List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
 				assertEquals(2, activeTransactions.size());
 
-				TransactionTrace got = activeTransactions.get(1);
+				TransactionTraceInfo got = activeTransactions.get(1);
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
@@ -76,10 +76,10 @@ public class ActiveTransactionsTest extends TestBase {
 
 			txnManager.txnBegin();
 			{
-				List<TransactionTrace> activeTransactions = txnManager.getActiveTransactions();
+				List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
 				assertEquals(2, activeTransactions.size());
 
-				TransactionTrace got = activeTransactions.get(1);
+				TransactionTraceInfo got = activeTransactions.get(1);
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
