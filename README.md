@@ -1,4 +1,4 @@
-transaction-manager
+transaction-manager [![Build Status](https://travis-ci.org/moznion/java-transaction-manager.svg)](https://travis-ci.org/moznion/java-transaction-manager)
 =============
 
 Simply DB transaction manager for Java
