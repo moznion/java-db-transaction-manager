@@ -4,17 +4,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Getter;
+import java.util.Optional;
 
 public class TransactionManager {
 	private final Connection connection;
 
+	private List<TransactionTrace> activeTransactions;
 	private Boolean originalAutoCommitStatus = null;
 	private int rollbackedInNestedTransaction = 0;
-
-	@Getter
-	private List<TransactionTrace> activeTransactions;
 
 	public TransactionManager(Connection connection) {
 		if (connection == null) {
@@ -81,9 +78,20 @@ public class TransactionManager {
 		}
 	}
 
+	public List<TransactionTrace> getActiveTransactions() {
+		return activeTransactions;
+	}
+
+	public Optional<TransactionTrace> getCurrentTransaction() {
+		if (activeTransactions.isEmpty()) {
+			return Optional.empty();
+		}
+
+		return Optional.of(activeTransactions.get(activeTransactions.size() - 1));
+	}
+
 	private void txnEnd() throws SQLException {
-		// turn back to original auto-commit mode
-		connection.setAutoCommit(originalAutoCommitStatus);
+		connection.setAutoCommit(originalAutoCommitStatus); // turn back to original auto-commit mode
 
 		activeTransactions = new ArrayList<>();
 		rollbackedInNestedTransaction = 0;
@@ -119,12 +127,11 @@ public class TransactionManager {
 
 		@Override
 		public void close() throws SQLException {
-			int numOfActiveTransactions = activeTransactions.size();
-			if (numOfActiveTransactions <= 0) {
+			if (activeTransactions.isEmpty()) {
 				return;
 			}
 
-			TransactionTrace currentTransactionTrace = activeTransactions.get(numOfActiveTransactions - 1);
+			TransactionTrace currentTransactionTrace = activeTransactions.get(activeTransactions.size() - 1);
 			if (Thread.currentThread().getId() != currentTransactionTrace.getThreadId()) {
 				return;
 			}

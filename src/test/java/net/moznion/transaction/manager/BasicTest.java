@@ -74,4 +74,27 @@ public class BasicTest extends TestBase {
 		assertTrue(!rs.next());
 		assertTrue(!connection.getAutoCommit());
 	}
+
+	@Test
+	public void currentTransaction() throws SQLException {
+		TransactionManager txnManager = new TransactionManager(connection);
+
+		txnManager.txnBegin();
+		{
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			TransactionTrace ttrace = txnManager.getCurrentTransaction().get();
+			assertEquals("net.moznion.transaction.manager.BasicTest", ttrace.getClassName());
+			assertEquals("BasicTest.java", ttrace.getFileName());
+			assertEquals("currentTransaction", ttrace.getMethodName());
+			assertEquals(82, ttrace.getLineNumber());
+			assertEquals(Thread.currentThread().getId(), ttrace.getThreadId());
+		}
+		txnManager.txnRollback();
+	}
+
+	@Test
+	public void currentTransactionDoesNotExist() throws SQLException {
+		TransactionManager txnManager = new TransactionManager(connection);
+		assertTrue(!txnManager.getCurrentTransaction().isPresent());
+	}
 }
