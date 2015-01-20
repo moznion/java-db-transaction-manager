@@ -1,7 +1,7 @@
 transaction-manager
 =============
 
-TBD
+Simply DB transaction manager for Java
 
 Synopsis
 ---
