@@ -2,6 +2,7 @@ package net.moznion.transaction.manager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ public class TransactionManager {
 	private final Connection connection;
 
 	private List<TransactionTrace> activeTransactions;
+	private Savepoint savepoint = null;
 	private Boolean originalAutoCommitStatus = null;
 	private int rollbackedInNestedTransaction = 0;
 
@@ -73,9 +75,26 @@ public class TransactionManager {
 		if (activeTransactions.size() > 0) {
 			rollbackedInNestedTransaction++;
 		} else {
-			connection.rollback();
+			if (savepoint != null) {
+				connection.rollback(savepoint);
+			} else {
+				connection.rollback();
+			}
 			txnEnd();
 		}
+	}
+
+	public void txnSave() throws SQLException {
+		savepoint = connection.setSavepoint();
+	}
+
+	public void txnSave(String name) throws SQLException {
+		if (name == null) {
+			txnSave();
+			return;
+		}
+
+		savepoint = connection.setSavepoint(name);
 	}
 
 	public List<TransactionTrace> getActiveTransactions() {
@@ -95,6 +114,7 @@ public class TransactionManager {
 
 		activeTransactions = new ArrayList<>();
 		rollbackedInNestedTransaction = 0;
+		savepoint = null;
 	}
 
 	public class TransactionScope implements AutoCloseable {
@@ -123,6 +143,14 @@ public class TransactionManager {
 
 			txnRollback();
 			isActioned = true;
+		}
+
+		public void save() throws SQLException {
+			txnSave();
+		}
+
+		public void save(String name) throws SQLException {
+			txnSave(name);
 		}
 
 		@Override

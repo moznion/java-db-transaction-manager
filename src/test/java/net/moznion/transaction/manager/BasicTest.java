@@ -97,4 +97,48 @@ public class BasicTest extends TestBase {
 		TransactionManager txnManager = new TransactionManager(connection);
 		assertTrue(!txnManager.getCurrentTransaction().isPresent());
 	}
+
+	@Test
+	public void rollbackWithAnonymousSavepoint() throws SQLException {
+		connection.setAutoCommit(false);
+
+		TransactionManager txnManager = new TransactionManager(connection);
+
+		txnManager.txnBegin();
+		{
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			txnManager.txnSave();
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (2, 'qux')").executeUpdate();
+		}
+		txnManager.txnRollback();
+
+		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
+		assertTrue(rs.next());
+		assertEquals(1, rs.getInt("id"));
+		assertEquals("baz", rs.getString("var"));
+
+		assertTrue(!rs.next());
+	}
+
+	@Test
+	public void rollbackWithNamedSavepoint() throws SQLException {
+		connection.setAutoCommit(false);
+
+		TransactionManager txnManager = new TransactionManager(connection);
+
+		txnManager.txnBegin();
+		{
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			txnManager.txnSave("SAVE ME!");
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (2, 'qux')").executeUpdate();
+		}
+		txnManager.txnRollback();
+
+		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
+		assertTrue(rs.next());
+		assertEquals(1, rs.getInt("id"));
+		assertEquals("baz", rs.getString("var"));
+
+		assertTrue(!rs.next());
+	}
 }

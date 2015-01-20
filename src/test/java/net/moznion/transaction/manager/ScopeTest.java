@@ -132,4 +132,40 @@ public class ScopeTest extends TestBase {
 
 		assertTrue(connection.getAutoCommit());
 	}
+
+	@Test
+	public void scopeRollbackWithAnonimousSavepoint() throws SQLException {
+		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			txn.save();
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (2, 'qux')").executeUpdate();
+			txn.rollback();
+		}
+
+		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
+		assertTrue(rs.next());
+		assertEquals(1, rs.getInt("id"));
+		assertEquals("baz", rs.getString("var"));
+
+		assertTrue(!rs.next());
+		assertTrue(connection.getAutoCommit());
+	}
+	
+	@Test
+	public void scopeRollbackWithNamedSavepoint() throws SQLException {
+		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			txn.save("SAVE ME!");
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (2, 'qux')").executeUpdate();
+			txn.rollback();
+		}
+
+		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
+		assertTrue(rs.next());
+		assertEquals(1, rs.getInt("id"));
+		assertEquals("baz", rs.getString("var"));
+
+		assertTrue(!rs.next());
+		assertTrue(connection.getAutoCommit());
+	}
 }
