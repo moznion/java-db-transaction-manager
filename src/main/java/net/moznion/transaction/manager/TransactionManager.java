@@ -9,7 +9,7 @@ import java.util.Optional;
 public class TransactionManager {
 	private final Connection connection;
 
-	private List<TransactionTrace> activeTransactions;
+	private List<TransactionTraceInfo> activeTransactions;
 	private Boolean originalAutoCommitStatus = null;
 	private int rollbackedInNestedTransaction = 0;
 
@@ -32,12 +32,12 @@ public class TransactionManager {
 			connection.setAutoCommit(false); // Enable transaction
 		}
 
-		TransactionTrace transactionTrace = null;
+		TransactionTraceInfo transactionTraceInfo = null;
 		Thread currentThread = Thread.currentThread();
 		StackTraceElement[] stackTraceElements = currentThread.getStackTrace();
 		if (stackTraceElements.length > 3) {
 			StackTraceElement caller = stackTraceElements[3]; // XXX 3 is magical, but it points caller stack
-			transactionTrace = TransactionTrace.builder()
+			transactionTraceInfo = TransactionTraceInfo.builder()
 				.className(caller.getClassName())
 				.fileName(caller.getFileName())
 				.methodName(caller.getMethodName())
@@ -45,7 +45,7 @@ public class TransactionManager {
 				.threadId(currentThread.getId())
 				.build();
 		}
-		activeTransactions.add(transactionTrace);
+		activeTransactions.add(transactionTraceInfo);
 	}
 
 	public void txnCommit() throws SQLException {
@@ -78,11 +78,11 @@ public class TransactionManager {
 		}
 	}
 
-	public List<TransactionTrace> getActiveTransactions() {
+	public List<TransactionTraceInfo> getActiveTransactions() {
 		return activeTransactions;
 	}
 
-	public Optional<TransactionTrace> getCurrentTransaction() {
+	public Optional<TransactionTraceInfo> getCurrentTransaction() {
 		if (activeTransactions.isEmpty()) {
 			return Optional.empty();
 		}
@@ -131,8 +131,8 @@ public class TransactionManager {
 				return;
 			}
 
-			TransactionTrace currentTransactionTrace = activeTransactions.get(activeTransactions.size() - 1);
-			if (Thread.currentThread().getId() != currentTransactionTrace.getThreadId()) {
+			TransactionTraceInfo currentTransactionTraceInfo = activeTransactions.get(activeTransactions.size() - 1);
+			if (Thread.currentThread().getId() != currentTransactionTraceInfo.getThreadId()) {
 				return;
 			}
 
