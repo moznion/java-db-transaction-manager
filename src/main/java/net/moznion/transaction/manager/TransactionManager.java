@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The manager for transaction.
+ * 
+ * @author moznion
+ *
+ */
 public class TransactionManager {
 	private final Connection connection;
 
@@ -13,6 +19,11 @@ public class TransactionManager {
 	private Boolean originalAutoCommitStatus = null;
 	private int rollbackedInNestedTransaction = 0;
 
+	/**
+	 * Constructs a transaction manager.
+	 * 
+	 * @param connection
+	 */
 	public TransactionManager(Connection connection) {
 		if (connection == null) {
 			throw new IllegalArgumentException("connection must not be null");
@@ -22,11 +33,32 @@ public class TransactionManager {
 		activeTransactions = new ArrayList<>();
 	}
 
+	/**
+	 * Begins transaction.
+	 * 
+	 * <p>
+	 * This method backups automatically the status of auto commit mode when this is called.
+	 * The status will be turned back when transaction is end.
+	 * </p>
+	 * 
+	 * @throws SQLException
+	 */
 	public void txnBegin() throws SQLException {
 		originalAutoCommitStatus = connection.getAutoCommit();
 		txnBegin(originalAutoCommitStatus);
 	}
 
+	/**
+	 * Begins transaction with specified original auto commit status.
+	 * 
+	 * <p>
+	 * This method backups the status of auto commit mode which is specified as an argument of this.
+	 * The status will be turned back when transaction is end.
+	 * </p>
+	 * 
+	 * @param originalAutoCommitStatus
+	 * @throws SQLException
+	 */
 	public void txnBegin(boolean originalAutoCommitStatus) throws SQLException {
 		if (activeTransactions.size() == 0 && originalAutoCommitStatus) {
 			connection.setAutoCommit(false); // Enable transaction
@@ -40,6 +72,11 @@ public class TransactionManager {
 		activeTransactions.add(transactionTraceInfo);
 	}
 
+	/**
+	 * Commits the current transaction.
+	 * 
+	 * @throws SQLException
+	 */
 	public void txnCommit() throws SQLException {
 		if (activeTransactions.size() <= 0) {
 			return;
@@ -56,6 +93,11 @@ public class TransactionManager {
 		}
 	}
 
+	/**
+	 * Rollbacks the current transaction.
+	 * 
+	 * @throws SQLException
+	 */
 	public void txnRollback() throws SQLException {
 		if (activeTransactions.size() <= 0) {
 			return;
@@ -70,10 +112,24 @@ public class TransactionManager {
 		}
 	}
 
+	/**
+	 * Stack traced information of active transactions.
+	 * 
+	 * @return 
+	 */
 	public List<TransactionTraceInfo> getActiveTransactions() {
 		return activeTransactions;
 	}
 
+	/**
+	 * Stack traced information of current transactions.
+	 * 
+	 * <p>
+	 * If current transaction doesn't exist, it returns {@code Optional.empty()}.
+	 * </p>
+	 * 
+	 * @return
+	 */
 	public Optional<TransactionTraceInfo> getCurrentTransaction() {
 		if (activeTransactions.isEmpty()) {
 			return Optional.empty();
@@ -89,9 +145,20 @@ public class TransactionManager {
 		rollbackedInNestedTransaction = 0;
 	}
 
+	/**
+	 * The handler of a transaction manager which is scope (means try-with-resources statement) based.
+	 * 
+	 * @author moznion
+	 *
+	 */
 	public class TransactionScope implements AutoCloseable {
 		private boolean isActioned = false;
 
+		/**
+		 * Constructs a handler of a transaction manager with is scope based.
+		 * 
+		 * @throws SQLException
+		 */
 		public TransactionScope() throws SQLException {
 			if (originalAutoCommitStatus == null) {
 				originalAutoCommitStatus = connection.getAutoCommit();
@@ -99,6 +166,11 @@ public class TransactionManager {
 			txnBegin(originalAutoCommitStatus);
 		}
 
+		/**
+		 * Commits the current transaction.
+		 * 
+		 * @throws SQLException
+		 */
 		public void commit() throws SQLException {
 			if (isActioned) {
 				return; // do not run twice
@@ -108,6 +180,11 @@ public class TransactionManager {
 			isActioned = true;
 		}
 
+		/**
+		 * Rollbacks the current transaction.
+		 * 
+		 * @throws SQLException
+		 */
 		public void rollback() throws SQLException {
 			if (isActioned) {
 				return; // do not run twice

@@ -1,9 +1,15 @@
 package net.moznion.transaction.manager;
 
-import java.util.Optional;
-
 import lombok.Getter;
 
+import java.util.Optional;
+
+/**
+ * Represents the stack traced information for transaction.
+ * 
+ * @author moznion
+ *
+ */
 @Getter
 public class TransactionTraceInfo {
 	private final String className;
@@ -12,6 +18,16 @@ public class TransactionTraceInfo {
 	private final int lineNumber;
 	private final long threadId;
 
+	/**
+	 * Construct traced information for transaction with optional {@code StackTraceElement} and thread ID.
+	 * 
+	 * <p>
+	 * If optional {@code StackTraceElement} is null, when each fields will be "Unknown".
+	 * </p>
+	 * 
+	 * @param maybeStackTraceElement
+	 * @param threadId
+	 */
 	public TransactionTraceInfo(Optional<StackTraceElement> maybeStackTraceElement, long threadId) {
 		this.threadId = threadId;
 

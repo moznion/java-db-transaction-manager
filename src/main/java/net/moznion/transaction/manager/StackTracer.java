@@ -1,10 +1,26 @@
 package net.moznion.transaction.manager;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
-
+/**
+ * The tracer for {@code StackTraceElement}.
+ * 
+ * <p>
+ * This class replace to {@code Thread.currentThread.getStackTrace}.
+ * {@code Thread.currentThread.getStackTrace} is really expensive to call,
+ * So change to invoke private method of Throwable to realize the same function.
+ * It is a bit hackish, but fast and cheap.
+ *
+ * ref: {@linkplain https://github.com/tokuhirom/caller}
+ * </p>
+ * 
+ * @author moznion
+ *
+ */
 @Slf4j
 class StackTracer {
 	private static boolean initialized = false;
@@ -18,7 +34,7 @@ class StackTracer {
 		if (getStackTraceElement != null) {
 			try {
 				return Optional.of((StackTraceElement)getStackTraceElement.invoke(new Throwable(), n));
-			} catch (Exception e) {
+			} catch (IllegalAccessException | InvocationTargetException | RuntimeException e) {
 				log.warn(new StringBuilder("Failed to invoke getStachTraceElement() method via reflection: ")
 					.append(e.toString())
 					.toString());

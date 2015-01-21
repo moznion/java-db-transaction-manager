@@ -3,26 +3,35 @@ package net.moznion.transaction.manager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
+
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.junit.Test;
-
+/**
+ * Test for basic txn handlings.
+ * 
+ * @author moznion
+ *
+ */
 public class BasicTest extends TestBase {
 	@Test
 	public void basicTransaction() throws SQLException {
 		TransactionManager txnManager = new TransactionManager(connection);
 
 		txnManager.txnBegin();
-		{
-			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+		try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+			preparedStatement.executeUpdate();
 		}
 		txnManager.txnCommit();
 
-		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
-		rs.next();
-		assertEquals(1, rs.getInt("id"));
-		assertTrue(connection.getAutoCommit());
+		try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM foo")) {
+			ResultSet rs = preparedStatement.executeQuery();
+			rs.next();
+			assertEquals(1, rs.getInt("id"));
+			assertTrue(connection.getAutoCommit());
+		}
 	}
 
 	@Test
@@ -30,14 +39,16 @@ public class BasicTest extends TestBase {
 		TransactionManager txnManager = new TransactionManager(connection);
 
 		txnManager.txnBegin();
-		{
-			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+		try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+			preparedStatement.executeUpdate();
 		}
 		txnManager.txnRollback();
 
-		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
-		assertTrue(!rs.next());
-		assertTrue(connection.getAutoCommit());
+		try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM foo")) {
+			ResultSet rs = preparedStatement.executeQuery();
+			assertTrue(!rs.next());
+			assertTrue(connection.getAutoCommit());
+		}
 	}
 
 	@Test
@@ -47,15 +58,17 @@ public class BasicTest extends TestBase {
 		TransactionManager txnManager = new TransactionManager(connection);
 
 		txnManager.txnBegin();
-		{
-			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+		try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+			preparedStatement.executeUpdate();
 		}
 		txnManager.txnCommit();
 
-		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
-		rs.next();
-		assertEquals(1, rs.getInt("id"));
-		assertTrue(!connection.getAutoCommit());
+		try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM foo")) {
+			ResultSet rs = preparedStatement.executeQuery();
+			rs.next();
+			assertEquals(1, rs.getInt("id"));
+			assertTrue(!connection.getAutoCommit());
+		}
 	}
 
 	@Test
@@ -65,14 +78,16 @@ public class BasicTest extends TestBase {
 		TransactionManager txnManager = new TransactionManager(connection);
 
 		txnManager.txnBegin();
-		{
-			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+		try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+			preparedStatement.executeUpdate();
 		}
 		txnManager.txnRollback();
 
-		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
-		assertTrue(!rs.next());
-		assertTrue(!connection.getAutoCommit());
+		try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM foo")) {
+			ResultSet rs = preparedStatement.executeQuery();
+			assertTrue(!rs.next());
+			assertTrue(!connection.getAutoCommit());
+		}
 	}
 
 	@Test
@@ -80,13 +95,13 @@ public class BasicTest extends TestBase {
 		TransactionManager txnManager = new TransactionManager(connection);
 
 		txnManager.txnBegin();
-		{
-			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+		try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+			preparedStatement.executeUpdate();
 			TransactionTraceInfo ttrace = txnManager.getCurrentTransaction().get();
 			assertEquals("net.moznion.transaction.manager.BasicTest", ttrace.getClassName());
 			assertEquals("BasicTest.java", ttrace.getFileName());
 			assertEquals("currentTransaction", ttrace.getMethodName());
-			assertEquals(82, ttrace.getLineNumber());
+			assertEquals(97, ttrace.getLineNumber());
 			assertEquals(Thread.currentThread().getId(), ttrace.getThreadId());
 		}
 		txnManager.txnRollback();
