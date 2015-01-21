@@ -46,7 +46,7 @@ public class TransactionManager {
 		}
 
 		if (rollbackedInNestedTransaction > 0) {
-			throw new RuntimeException(); // TODO
+			throw new AlreadyRollbackedException("Tried to commit but it had already rollbacked in nested transaction");
 		}
 
 		activeTransactions.remove(activeTransactions.size() - 1); // remove last item
