@@ -101,7 +101,7 @@ public class BasicTest extends TestBase {
 			assertEquals("net.moznion.transaction.manager.BasicTest", ttrace.getClassName());
 			assertEquals("BasicTest.java", ttrace.getFileName());
 			assertEquals("currentTransaction", ttrace.getMethodName());
-			assertEquals(82, ttrace.getLineNumber());
+			assertEquals(97, ttrace.getLineNumber());
 			assertEquals(Thread.currentThread().getId(), ttrace.getThreadId());
 		}
 		txnManager.txnRollback();
