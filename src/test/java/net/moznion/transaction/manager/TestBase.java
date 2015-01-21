@@ -1,9 +1,6 @@
 package net.moznion.transaction.manager;
 
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.After;
@@ -11,21 +8,37 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+/**
+ * Base class for Tests.
+ * 
+ * @author moznion
+ *
+ */
 public class TestBase {
-	private static final String baseUrl = "jdbc:mysql://localhost";
-	private static final String user = "root";
-	private static final String password = "";
+	private static final String BASE_URL = "jdbc:mysql://localhost";
+	private static final String USER = "root";
+	private static final String PASSWORD = "";
 	private static String testDBName;
 
+	@SuppressFBWarnings
 	protected static Connection connection;
 
 	@BeforeClass
+	@SuppressFBWarnings
 	public static void beforeClass() throws NoSuchAlgorithmException, SQLException {
-		try (Connection conn = DriverManager.getConnection(baseUrl, user, password)) {
+		try (Connection conn = DriverManager.getConnection(BASE_URL, USER, PASSWORD)) {
 			while (true) {
 				testDBName = "transaction_manager_test_" + RandomStringUtils.randomAlphabetic(8);
 				try {
-					conn.prepareStatement("CREATE DATABASE " + testDBName).executeUpdate();
+					try (PreparedStatement preparedStatement = conn.prepareStatement("CREATE DATABASE " + testDBName)) {
+						preparedStatement.executeUpdate();
+					}
 					break;
 				} catch (SQLException e) {
 					// re-do
@@ -35,26 +48,36 @@ public class TestBase {
 	}
 
 	@AfterClass
+	@SuppressFBWarnings
 	public static void afterClass() throws SQLException {
-		try (Connection conn = DriverManager.getConnection(baseUrl, user, password)) {
-			conn.prepareStatement("DROP DATABASE " + testDBName).executeUpdate();
+		try (Connection conn = DriverManager.getConnection(BASE_URL, USER, PASSWORD)) {
+			try (PreparedStatement preparedStatement = conn.prepareStatement("DROP DATABASE " + testDBName)) {
+				preparedStatement.executeUpdate();
+			}
 		}
 	}
 
 	@Before
+	@SuppressFBWarnings
 	public void before() throws SQLException {
-		try (Connection conn = DriverManager.getConnection(baseUrl, user, password)) {
-			conn.prepareStatement("DROP DATABASE " + testDBName).executeUpdate();
-			conn.prepareStatement("CREATE DATABASE " + testDBName).executeUpdate();
+		try (Connection conn = DriverManager.getConnection(BASE_URL, USER, PASSWORD)) {
+			try (PreparedStatement preparedStatement = conn.prepareStatement("DROP DATABASE " + testDBName)) {
+				preparedStatement.executeUpdate();
+			}
+			try (PreparedStatement preparedStatement = conn.prepareStatement("CREATE DATABASE " + testDBName)) {
+				preparedStatement.executeUpdate();
+			}
 		}
 
-		String url = baseUrl + "/" + testDBName;
-		connection = DriverManager.getConnection(url, user, password);
-		connection.prepareStatement("CREATE TABLE foo ("
+		String url = BASE_URL + "/" + testDBName;
+		connection = DriverManager.getConnection(url, USER, PASSWORD);
+		try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE foo ("
 			+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 			+ "var VARCHAR(32) NOT NULL,"
 			+ "PRIMARY KEY (id)"
-			+ ")").executeUpdate();
+			+ ")")) {
+			preparedStatement.executeUpdate();
+		}
 	}
 
 	@After

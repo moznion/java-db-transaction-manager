@@ -1,5 +1,6 @@
 package net.moznion.transaction.manager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ class StackTracer {
 		if (getStackTraceElement != null) {
 			try {
 				return Optional.of((StackTraceElement)getStackTraceElement.invoke(new Throwable(), n));
-			} catch (Exception e) {
+			} catch (IllegalAccessException | InvocationTargetException | RuntimeException e) {
 				log.warn(new StringBuilder("Failed to invoke getStachTraceElement() method via reflection: ")
 					.append(e.toString())
 					.toString());

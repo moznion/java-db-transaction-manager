@@ -2,13 +2,19 @@ package net.moznion.transaction.manager;
 
 import static org.junit.Assert.assertEquals;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import net.moznion.transaction.manager.TransactionManager.TransactionScope;
 
 import org.junit.Test;
 
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * Test for check trace information of active transactions.
+ * 
+ * @author moznion
+ *
+ */
 public class ActiveTransactionsTest extends TestBase {
 	@Test
 	public void proveActiveTransactions() throws SQLException {
@@ -28,31 +34,29 @@ public class ActiveTransactionsTest extends TestBase {
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
-				assertEquals(22, got.getLineNumber());
+				assertEquals(28, got.getLineNumber());
 				assertEquals(currentThreadId, got.getThreadId());
 				assertEquals(String.format("File Name: %s, Class Name: %s, Method Name: %s, Line Number: %d, Thread ID: %d",
 					filename,
 					"net.moznion.transaction.manager.ActiveTransactionsTest",
 					"proveActiveTransactions",
-					22,
+					28,
 					currentThreadId
 					), got.toString());
 			}
 
 			try (TransactionScope txn2 = txnManager.new TransactionScope()) {
-				{
-					List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
-					assertEquals(2, activeTransactions.size());
+				List<TransactionTraceInfo> activeTransactions = txnManager.getActiveTransactions();
+				assertEquals(2, activeTransactions.size());
 
-					TransactionTraceInfo got = activeTransactions.get(1);
-					assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
-					assertEquals(filename, got.getFileName());
-					assertEquals("proveActiveTransactions", got.getMethodName());
-					assertEquals(42, got.getLineNumber());
-					assertEquals(currentThreadId, got.getThreadId());
+				TransactionTraceInfo got = activeTransactions.get(1);
+				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
+				assertEquals(filename, got.getFileName());
+				assertEquals("proveActiveTransactions", got.getMethodName());
+				assertEquals(48, got.getLineNumber());
+				assertEquals(currentThreadId, got.getThreadId());
 
-					txn2.commit();
-				}
+				txn2.commit();
 			}
 
 			{
@@ -63,7 +67,7 @@ public class ActiveTransactionsTest extends TestBase {
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
-				assertEquals(22, got.getLineNumber());
+				assertEquals(28, got.getLineNumber());
 				assertEquals(currentThreadId, got.getThreadId());
 			}
 
@@ -76,7 +80,7 @@ public class ActiveTransactionsTest extends TestBase {
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
-				assertEquals(70, got.getLineNumber());
+				assertEquals(74, got.getLineNumber());
 				assertEquals(currentThreadId, got.getThreadId());
 			}
 			txnManager.txnCommit();
@@ -90,7 +94,7 @@ public class ActiveTransactionsTest extends TestBase {
 				assertEquals("net.moznion.transaction.manager.ActiveTransactionsTest", got.getClassName());
 				assertEquals(filename, got.getFileName());
 				assertEquals("proveActiveTransactions", got.getMethodName());
-				assertEquals(84, got.getLineNumber());
+				assertEquals(88, got.getLineNumber());
 				assertEquals(currentThreadId, got.getThreadId());
 			}
 			txnManager.txnRollback();
