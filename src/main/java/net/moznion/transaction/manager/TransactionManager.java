@@ -32,19 +32,11 @@ public class TransactionManager {
 			connection.setAutoCommit(false); // Enable transaction
 		}
 
-		TransactionTraceInfo transactionTraceInfo = null;
+		// `3` is magical, but it points the transaction stack
+		Optional<StackTraceElement> maybeStackTraceElement = StackTracer.getStackTraceElement(3);
+
 		Thread currentThread = Thread.currentThread();
-		StackTraceElement[] stackTraceElements = currentThread.getStackTrace();
-		if (stackTraceElements.length > 3) {
-			StackTraceElement caller = stackTraceElements[3]; // XXX 3 is magical, but it points caller stack
-			transactionTraceInfo = TransactionTraceInfo.builder()
-				.className(caller.getClassName())
-				.fileName(caller.getFileName())
-				.methodName(caller.getMethodName())
-				.lineNumber(caller.getLineNumber())
-				.threadId(currentThread.getId())
-				.build();
-		}
+		TransactionTraceInfo transactionTraceInfo = new TransactionTraceInfo(maybeStackTraceElement, currentThread.getId());
 		activeTransactions.add(transactionTraceInfo);
 	}
 

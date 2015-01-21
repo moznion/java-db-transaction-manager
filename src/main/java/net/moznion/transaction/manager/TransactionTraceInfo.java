@@ -1,8 +1,8 @@
 package net.moznion.transaction.manager;
 
+import java.util.Optional;
+
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 @Getter
 public class TransactionTraceInfo {
@@ -12,29 +12,37 @@ public class TransactionTraceInfo {
 	private final int lineNumber;
 	private final long threadId;
 
-	@Setter
-	@Accessors(fluent = true)
-	public static class Builder {
-		private String className = "";
-		private String fileName = "";
-		private String methodName = "";
-		private int lineNumber = 0;
-		private long threadId = 0;
+	public TransactionTraceInfo(Optional<StackTraceElement> maybeStackTraceElement, long threadId) {
+		this.threadId = threadId;
 
-		public TransactionTraceInfo build() {
-			return new TransactionTraceInfo(this);
+		if (maybeStackTraceElement.isPresent()) {
+			StackTraceElement stackTraceElement = maybeStackTraceElement.get();
+			className = stackTraceElement.getClassName();
+			fileName = stackTraceElement.getFileName();
+			methodName = stackTraceElement.getMethodName();
+			lineNumber = stackTraceElement.getLineNumber();
+		} else {
+			String unknownSimbol = "Unknown";
+			className = unknownSimbol;
+			fileName = unknownSimbol;
+			methodName = unknownSimbol;
+			lineNumber = -1;
 		}
 	}
 
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	private TransactionTraceInfo(Builder b) {
-		className = b.className;
-		fileName = b.fileName;
-		methodName = b.methodName;
-		lineNumber = b.lineNumber;
-		threadId = b.threadId;
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("File Name: ")
+			.append(fileName)
+			.append(", Class Name: ")
+			.append(className)
+			.append(", Method Name: ")
+			.append(methodName)
+			.append(", Line Number: ")
+			.append(lineNumber)
+			.append(", Thread ID: ")
+			.append(threadId)
+			.toString();
 	}
 }
