@@ -132,4 +132,33 @@ public class ScopeTest extends TestBase {
 
 		assertTrue(connection.getAutoCommit());
 	}
+
+	@Test
+	public void basicScopeTransactionWithNonAutoCommitMode() throws SQLException {
+		connection.setAutoCommit(false);
+
+		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			txn.commit();
+		}
+
+		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
+		rs.next();
+		assertEquals(1, rs.getInt("id"));
+		assertTrue(!connection.getAutoCommit());
+	}
+
+	@Test
+	public void scopeRollbackWithNonAutoCommitMode() throws SQLException {
+		connection.setAutoCommit(false);
+
+		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+			connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')").executeUpdate();
+			txn.rollback();
+		}
+
+		ResultSet rs = connection.prepareStatement("SELECT * FROM foo").executeQuery();
+		assertTrue(!rs.next());
+		assertTrue(!connection.getAutoCommit());
+	}
 }
