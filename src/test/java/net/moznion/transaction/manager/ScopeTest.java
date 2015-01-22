@@ -205,4 +205,10 @@ public class ScopeTest extends TestBase {
 			assertTrue(!connection.getAutoCommit());
 		}
 	}
+
+	@SuppressWarnings("resource")
+	@Test(expected = IllegalArgumentException.class)
+	public void gaveNullAsConnection() throws SQLException {
+		new TransactionScope(null);
+	}
 }

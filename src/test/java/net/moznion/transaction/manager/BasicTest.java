@@ -112,4 +112,9 @@ public class BasicTest extends TestBase {
 		TransactionManager txnManager = new TransactionManager(connection);
 		assertTrue(!txnManager.getCurrentTransaction().isPresent());
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void gaveNullAsConnection() {
+		new TransactionManager(null);
+	}
 }
