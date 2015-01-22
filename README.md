@@ -32,7 +32,7 @@ txnManager.txnRollback(); // rollback
 
 ```java
 TransactionManager txnManager = new TransactionManager(connection);
-try (TransactionScope txn = txnManager.new TransactionScope()) {
+try (TransactionScope txn = new TransactionScope(txnManager)) {
     try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
         preparedStatement.executeUpdate();
     }
@@ -44,7 +44,7 @@ try (TransactionScope txn = txnManager.new TransactionScope()) {
 
 ```java
 TransactionManager txnManager = new TransactionManager(connection);
-try (TransactionScope txn = txnManager.new TransactionScope()) {
+try (TransactionScope txn = new TransactionScope(txnManager)) {
     try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
         preparedStatement.executeUpdate();
     }
@@ -56,7 +56,7 @@ try (TransactionScope txn = txnManager.new TransactionScope()) {
 
 ```java
 TransactionManager txnManager = new TransactionManager(connection);
-try (TransactionScope txn = txnManager.new TransactionScope()) {
+try (TransactionScope txn = new TransactionScope(txnManager)) {
     try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
         preparedStatement.executeUpdate();
     }
