@@ -1,17 +1,87 @@
-transaction-manager [![Build Status](https://travis-ci.org/moznion/java-transaction-manager.svg?branch=master)](https://travis-ci.org/moznion/java-transaction-manager)
+transaction-manager [![Build Status][travis-image]][travis-url] [![Maven Central][maven-image]][maven-url] [![javadoc.io][javadocio-image]][javadocio-url]
 =============
 
-Simply DB transaction manager for Java
+Simply DB transaction manager for Java.
 
 Synopsis
 ---
 
-TBD
+### Basic transaction with commit
+
+```java
+TransactionManager txnManager = new TransactionManager(connection);
+txnManager.txnBegin();
+try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+    preparedStatement.executeUpdate();
+}
+txnManager.txnCommit(); // insert successfully
+```
+
+### Basic transaction with rollback
+
+```java
+TransactionManager txnManager = new TransactionManager(connection);
+txnManager.txnBegin();
+try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+    preparedStatement.executeUpdate();
+}
+txnManager.txnRollback(); // rollback
+```
+
+### Scope based transaction with commit
+
+```java
+TransactionManager txnManager = new TransactionManager(connection);
+try (TransactionScope txn = txnManager.new TransactionScope()) {
+    try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+        preparedStatement.executeUpdate();
+    }
+    txn.commit(); // insert successfully
+}
+```
+
+### Scope based transaction with rollback
+
+```java
+TransactionManager txnManager = new TransactionManager(connection);
+try (TransactionScope txn = txnManager.new TransactionScope()) {
+    try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+        preparedStatement.executeUpdate();
+    }
+    txn.rollback(); // rollback
+}
+```
+
+### Scope based transaction with implicit rollback
+
+```java
+TransactionManager txnManager = new TransactionManager(connection);
+try (TransactionScope txn = txnManager.new TransactionScope()) {
+    try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
+        preparedStatement.executeUpdate();
+    }
+} // if reach here without any action (commit or rollback), transaction will rollback automatically
+```
 
 Description
 --
 
-TBD
+transaction-manager is a simply DB transaction manager.
+
+This package provides `begin`, `commit` and `rollback` function for transaction.
+And also provides scope based transaction manager (scope based means it is with `try-with-resources` statement).
+
+This package is inspired by [DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager) from Perl.
+
+Behavior Nested Transaction
+--
+
+If any of nested transaction is rollbacked, all of transaction will rollback.
+
+See Also
+--
+
+- [DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager)
 
 Author
 --
@@ -43,4 +113,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
+
+[travis-url]: https://travis-ci.org/moznion/java-transaction-manager
+[travis-image]: https://travis-ci.org/moznion/java-transaction-manager.svg?branch=master
+[maven-url]: https://maven-badges.herokuapp.com/maven-central/net.moznion/mysql-diff
+[maven-image]: https://maven-badges.herokuapp.com/maven-central/net.moznion/mysql-diff/badge.svg
+[javadocio-url]: https://javadocio-badges.herokuapp.com/net.moznion/mysql-diff
+[javadocio-image]: https://javadocio-badges.herokuapp.com/net.moznion/mysql-diff/badge.svg
 
