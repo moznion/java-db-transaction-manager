@@ -3,8 +3,6 @@ package net.moznion.transaction.manager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import net.moznion.transaction.manager.TransactionManager.TransactionScope;
-
 import org.junit.Test;
 
 import java.sql.PreparedStatement;
@@ -20,7 +18,7 @@ import java.sql.SQLException;
 public class ScopeTest extends TestBase {
 	@Test
 	public void basicScopeTransaction() throws SQLException {
-		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+		try (TransactionScope txn = new TransactionScope(new TransactionManager(connection))) {
 			try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 				preparedStatement.executeUpdate();
 			}
@@ -37,7 +35,7 @@ public class ScopeTest extends TestBase {
 
 	@Test
 	public void scopeRollback() throws SQLException {
-		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+		try (TransactionScope txn = new TransactionScope(new TransactionManager(connection))) {
 			try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 				preparedStatement.executeUpdate();
 			}
@@ -53,7 +51,7 @@ public class ScopeTest extends TestBase {
 
 	@Test
 	public void autoRollbackByTryWithResources() throws SQLException {
-		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+		try (TransactionScope txn = new TransactionScope(new TransactionManager(connection))) {
 			try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 				preparedStatement.executeUpdate();
 			}
@@ -70,8 +68,8 @@ public class ScopeTest extends TestBase {
 	public void nestedScopeWithRollbackAndRollback() throws SQLException {
 		TransactionManager transactionManager = new TransactionManager(connection);
 
-		try (TransactionScope txn1 = transactionManager.new TransactionScope()) {
-			try (TransactionScope txn2 = transactionManager.new TransactionScope()) {
+		try (TransactionScope txn1 = new TransactionScope(transactionManager)) {
+			try (TransactionScope txn2 = new TransactionScope(transactionManager)) {
 				try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 					preparedStatement.executeUpdate();
 				}
@@ -94,8 +92,8 @@ public class ScopeTest extends TestBase {
 	public void nestedScopeWithCommitAndRollback() throws SQLException {
 		TransactionManager transactionManager = new TransactionManager(connection);
 
-		try (TransactionScope txn1 = transactionManager.new TransactionScope()) {
-			try (TransactionScope txn2 = transactionManager.new TransactionScope()) {
+		try (TransactionScope txn1 = new TransactionScope(transactionManager)) {
+			try (TransactionScope txn2 = new TransactionScope(transactionManager)) {
 				try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 					preparedStatement.executeUpdate();
 				}
@@ -118,8 +116,8 @@ public class ScopeTest extends TestBase {
 	public void nestedScopeWithRollbackAndCommit() throws SQLException {
 		TransactionManager transactionManager = new TransactionManager(connection);
 
-		try (TransactionScope txn1 = transactionManager.new TransactionScope()) {
-			try (TransactionScope txn2 = transactionManager.new TransactionScope()) {
+		try (TransactionScope txn1 = new TransactionScope(transactionManager)) {
+			try (TransactionScope txn2 = new TransactionScope(transactionManager)) {
 				try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 					preparedStatement.executeUpdate();
 				}
@@ -142,8 +140,8 @@ public class ScopeTest extends TestBase {
 	public void nestedScopeWithCommitAndCommit() throws SQLException {
 		TransactionManager transactionManager = new TransactionManager(connection);
 
-		try (TransactionScope txn1 = transactionManager.new TransactionScope()) {
-			try (TransactionScope txn2 = transactionManager.new TransactionScope()) {
+		try (TransactionScope txn1 = new TransactionScope(transactionManager)) {
+			try (TransactionScope txn2 = new TransactionScope(transactionManager)) {
 				try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 					preparedStatement.executeUpdate();
 				}
@@ -175,7 +173,7 @@ public class ScopeTest extends TestBase {
 	public void basicScopeTransactionWithNonAutoCommitMode() throws SQLException {
 		connection.setAutoCommit(false);
 
-		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+		try (TransactionScope txn = new TransactionScope(new TransactionManager(connection))) {
 			try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 				preparedStatement.executeUpdate();
 			}
@@ -194,7 +192,7 @@ public class ScopeTest extends TestBase {
 	public void scopeRollbackWithNonAutoCommitMode() throws SQLException {
 		connection.setAutoCommit(false);
 
-		try (TransactionScope txn = new TransactionManager(connection).new TransactionScope()) {
+		try (TransactionScope txn = new TransactionScope(new TransactionManager(connection))) {
 			try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 				preparedStatement.executeUpdate();
 			}

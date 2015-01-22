@@ -1,5 +1,7 @@
 package net.moznion.transaction.manager;
 
+import lombok.Getter;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,11 +15,14 @@ import java.util.Optional;
  *
  */
 public class TransactionManager {
-	private final Connection connection;
-
 	private List<TransactionTraceInfo> activeTransactions;
-	private Boolean originalAutoCommitStatus = null;
 	private int rollbackedInNestedTransaction = 0;
+
+	@Getter
+	private Boolean originalAutoCommitStatus = null;
+
+	@Getter
+	private final Connection connection;
 
 	/**
 	 * Constructs a transaction manager.
@@ -63,6 +68,7 @@ public class TransactionManager {
 		if (activeTransactions.size() == 0 && originalAutoCommitStatus) {
 			connection.setAutoCommit(false); // Enable transaction
 		}
+		this.originalAutoCommitStatus = originalAutoCommitStatus;
 
 		// `3` is magical, but it points the transaction stack
 		Optional<StackTraceElement> maybeStackTraceElement = StackTracer.getStackTraceElement(3);
@@ -143,71 +149,5 @@ public class TransactionManager {
 
 		activeTransactions = new ArrayList<>();
 		rollbackedInNestedTransaction = 0;
-	}
-
-	/**
-	 * The handler of a transaction manager which is scope (means try-with-resources statement) based.
-	 * 
-	 * @author moznion
-	 *
-	 */
-	public class TransactionScope implements AutoCloseable {
-		private boolean isActioned = false;
-
-		/**
-		 * Constructs a handler of a transaction manager with is scope based.
-		 * 
-		 * @throws SQLException
-		 */
-		public TransactionScope() throws SQLException {
-			if (originalAutoCommitStatus == null) {
-				originalAutoCommitStatus = connection.getAutoCommit();
-			}
-			txnBegin(originalAutoCommitStatus);
-		}
-
-		/**
-		 * Commits the current transaction.
-		 * 
-		 * @throws SQLException
-		 */
-		public void commit() throws SQLException {
-			if (isActioned) {
-				return; // do not run twice
-			}
-
-			txnCommit();
-			isActioned = true;
-		}
-
-		/**
-		 * Rollbacks the current transaction.
-		 * 
-		 * @throws SQLException
-		 */
-		public void rollback() throws SQLException {
-			if (isActioned) {
-				return; // do not run twice
-			}
-
-			txnRollback();
-			isActioned = true;
-		}
-
-		@Override
-		public void close() throws SQLException {
-			if (activeTransactions.isEmpty()) {
-				return;
-			}
-
-			TransactionTraceInfo currentTransactionTraceInfo = activeTransactions.get(activeTransactions.size() - 1);
-			if (Thread.currentThread().getId() != currentTransactionTraceInfo.getThreadId()) {
-				return;
-			}
-
-			if (!isActioned) {
-				rollback();
-			}
-		}
 	}
 }
