@@ -116,8 +116,8 @@ THE SOFTWARE.
 
 [travis-url]: https://travis-ci.org/moznion/java-transaction-manager
 [travis-image]: https://travis-ci.org/moznion/java-transaction-manager.svg?branch=master
-[maven-url]: https://maven-badges.herokuapp.com/maven-central/net.moznion/mysql-diff
-[maven-image]: https://maven-badges.herokuapp.com/maven-central/net.moznion/mysql-diff/badge.svg
-[javadocio-url]: https://javadocio-badges.herokuapp.com/net.moznion/mysql-diff
-[javadocio-image]: https://javadocio-badges.herokuapp.com/net.moznion/mysql-diff/badge.svg
+[maven-url]: https://maven-badges.herokuapp.com/maven-central/net.moznion/transaction-manager
+[maven-image]: https://maven-badges.herokuapp.com/maven-central/net.moznion/transaction-manager/badge.svg?style=flat
+[javadocio-url]: https://javadocio-badges.herokuapp.com/net.moznion/transaction-manager
+[javadocio-image]: https://javadocio-badges.herokuapp.com/net.moznion/transaction-manager/badge.svg
 
