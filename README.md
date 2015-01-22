@@ -73,7 +73,7 @@ And also provides scope based transaction manager (scope based means it is with 
 
 This package is inspired by [DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager) from Perl.
 
-Behavior Nested Transaction
+Behavior of Nested Transaction
 --
 
 If any of nested transaction is rollbacked, all of transaction will rollback.
