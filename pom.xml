@@ -8,8 +8,8 @@
 	<packaging>jar</packaging>
 
 	<name>transaction-manager</name>
-	<description></description>
-	<url></url>
+	<description>Simply DB transaction manager</description>
+	<url>https://github.com/moznion/java-transaction-manager</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -213,9 +213,9 @@
 	</distributionManagement>
 
 	<scm>
-		<url></url>
-		<connection>scm:git:</connection>
-		<developerConnection>scm:git:</developerConnection>
+		<url>https://github.com/moznion/java-transaction-manager</url>
+		<connection>scm:git:git@github.com:moznion/java-transaction-manager.git</connection>
+		<developerConnection>scm:git:git@github.com:moznion/java-transaction-manager.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 

@@ -78,6 +78,11 @@ Behavior Nested Transaction
 
 If any of nested transaction is rollbacked, all of transaction will rollback.
 
+Dependencies
+--
+
+- Java 8 or later
+
 See Also
 --
 
