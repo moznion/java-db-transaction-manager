@@ -1,5 +1,7 @@
-db-transaction-manager [![Build Status][travis-image]][travis-url] [![Maven Central][maven-image]][maven-url] [![javadoc.io][javadocio-image]][javadocio-url]
+db-transaction-manager
 =============
+
+[![Build Status][travis-image]][travis-url] [![Maven Central][maven-image]][maven-url] [![javadoc.io][javadocio-image]][javadocio-url]
 
 Simply DB transaction manager for Java.
 
