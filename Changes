@@ -1,11 +1,6 @@
 Revision history of net.moznion|db-transaction-manager
 
-2.0.0 2015-01-22T23:16:13Z
-
-    - [Destructive Change] Change interface of TransactionScope.
-      It is no longer inner class of TransactionManager.
-
-1.0.0 2015-01-22T21:35:24Z
+1.0.0 2015-01-23T20:11:59Z (+0900)
 
     - Original version
 
