@@ -1,4 +1,4 @@
-package net.moznion.transaction.manager;
+package net.moznion.db.transaction.manager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -2,13 +2,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.moznion</groupId>
-	<artifactId>transaction-manager</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
+	<artifactId>db-transaction-manager</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>transaction-manager</name>
+	<name>db-transaction-manager</name>
 	<description>Simply DB transaction manager</description>
-	<url>https://github.com/moznion/java-transaction-manager</url>
+	<url>https://github.com/moznion/java-db-transaction-manager</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -212,9 +212,9 @@
 	</distributionManagement>
 
 	<scm>
-		<url>https://github.com/moznion/java-transaction-manager</url>
-		<connection>scm:git:git@github.com:moznion/java-transaction-manager.git</connection>
-		<developerConnection>scm:git:git@github.com:moznion/java-transaction-manager.git</developerConnection>
+		<url>https://github.com/moznion/java-db-transaction-manager</url>
+		<connection>scm:git:git@github.com:moznion/java-db-transaction-manager.git</connection>
+		<developerConnection>scm:git:git@github.com:moznion/java-db-transaction-manager.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 

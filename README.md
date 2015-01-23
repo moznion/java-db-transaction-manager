@@ -1,4 +1,4 @@
-transaction-manager [![Build Status][travis-image]][travis-url] [![Maven Central][maven-image]][maven-url] [![javadoc.io][javadocio-image]][javadocio-url]
+db-transaction-manager [![Build Status][travis-image]][travis-url] [![Maven Central][maven-image]][maven-url] [![javadoc.io][javadocio-image]][javadocio-url]
 =============
 
 Simply DB transaction manager for Java.
@@ -73,10 +73,10 @@ And also provides scope based transaction manager (scope based means it is with 
 
 This package is inspired by [DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager) from Perl.
 
-Behavior of Nested Transaction
+Behavior of Nested Transactions
 --
 
-If any of nested transaction is rollbacked, all of transaction will rollback.
+If any of nested transaction is rollbacked, all of the transactions will rollback.
 
 Dependencies
 --
@@ -119,10 +119,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-[travis-url]: https://travis-ci.org/moznion/java-transaction-manager
-[travis-image]: https://travis-ci.org/moznion/java-transaction-manager.svg?branch=master
-[maven-url]: https://maven-badges.herokuapp.com/maven-central/net.moznion/transaction-manager
-[maven-image]: https://maven-badges.herokuapp.com/maven-central/net.moznion/transaction-manager/badge.svg?style=flat
-[javadocio-url]: https://javadocio-badges.herokuapp.com/net.moznion/transaction-manager
-[javadocio-image]: https://javadocio-badges.herokuapp.com/net.moznion/transaction-manager/badge.svg
+[travis-url]: https://travis-ci.org/moznion/java-db-transaction-manager
+[travis-image]: https://travis-ci.org/moznion/java-db-transaction-manager.svg?branch=master
+[maven-url]: https://maven-badges.herokuapp.com/maven-central/net.moznion/db-transaction-manager
+[maven-image]: https://maven-badges.herokuapp.com/maven-central/net.moznion/db-transaction-manager/badge.svg?style=flat
+[javadocio-url]: https://javadocio-badges.herokuapp.com/net.moznion/db-transaction-manager
+[javadocio-image]: https://javadocio-badges.herokuapp.com/net.moznion/db-transaction-manager/badge.svg
 

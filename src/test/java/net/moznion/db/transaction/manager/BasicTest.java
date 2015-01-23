@@ -1,4 +1,4 @@
-package net.moznion.transaction.manager;
+package net.moznion.db.transaction.manager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -98,7 +98,7 @@ public class BasicTest extends TestBase {
 		try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO foo (id, var) VALUES (1, 'baz')")) {
 			preparedStatement.executeUpdate();
 			TransactionTraceInfo ttrace = txnManager.getCurrentTransaction().get();
-			assertEquals("net.moznion.transaction.manager.BasicTest", ttrace.getClassName());
+			assertEquals("net.moznion.db.transaction.manager.BasicTest", ttrace.getClassName());
 			assertEquals("BasicTest.java", ttrace.getFileName());
 			assertEquals("currentTransaction", ttrace.getMethodName());
 			assertEquals(97, ttrace.getLineNumber());

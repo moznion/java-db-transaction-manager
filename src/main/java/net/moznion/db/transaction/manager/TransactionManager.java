@@ -1,4 +1,4 @@
-package net.moznion.transaction.manager;
+package net.moznion.db.transaction.manager;
 
 import lombok.Getter;
 

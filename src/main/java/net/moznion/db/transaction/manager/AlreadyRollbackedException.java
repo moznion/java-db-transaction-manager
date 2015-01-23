@@ -1,4 +1,4 @@
-package net.moznion.transaction.manager;
+package net.moznion.db.transaction.manager;
 
 /**
  * Thrown to indicate that a transaction has been already rollbacked by another {@code rollback()}.
