@@ -42,8 +42,8 @@ public class TransactionManager {
 	 * Begins transaction.
 	 * 
 	 * <p>
-	 * This method backups automatically the status of auto commit mode when this is called.
-	 * The status will be turned back when transaction is end.
+	 * This method backups automatically the status of auto commit mode when
+	 * this is called. The status will be turned back when transaction is end.
 	 * </p>
 	 * 
 	 * @throws SQLException
@@ -57,24 +57,27 @@ public class TransactionManager {
 	 * Begins transaction with specified original auto commit status.
 	 * 
 	 * <p>
-	 * This method backups the status of auto commit mode which is specified as an argument of this.
-	 * The status will be turned back when transaction is end.
+	 * This method backups the status of auto commit mode which is specified as
+	 * an argument of this. The status will be turned back when transaction is
+	 * end.
 	 * </p>
 	 * 
 	 * @param originalAutoCommitStatus
 	 * @throws SQLException
 	 */
 	public void txnBegin(boolean originalAutoCommitStatus) throws SQLException {
-		if (activeTransactions.size() == 0 && originalAutoCommitStatus) {
+		if (activeTransactions.size() == 0) {
+			this.originalAutoCommitStatus = originalAutoCommitStatus;
 			connection.setAutoCommit(false); // Enable transaction
 		}
-		this.originalAutoCommitStatus = originalAutoCommitStatus;
 
 		// `3` is magical, but it points the transaction stack
-		Optional<StackTraceElement> maybeStackTraceElement = StackTracer.getStackTraceElement(3);
+		Optional<StackTraceElement> maybeStackTraceElement = StackTracer
+				.getStackTraceElement(3);
 
 		Thread currentThread = Thread.currentThread();
-		TransactionTraceInfo transactionTraceInfo = new TransactionTraceInfo(maybeStackTraceElement, currentThread.getId());
+		TransactionTraceInfo transactionTraceInfo = new TransactionTraceInfo(
+				maybeStackTraceElement, currentThread.getId());
 		activeTransactions.add(transactionTraceInfo);
 	}
 
@@ -89,10 +92,12 @@ public class TransactionManager {
 		}
 
 		if (rollbackedInNestedTransaction > 0) {
-			throw new AlreadyRollbackedException("Tried to commit but it had already rollbacked in nested transaction");
+			throw new AlreadyRollbackedException(
+					"Tried to commit but it had already rollbacked in nested transaction");
 		}
 
-		activeTransactions.remove(activeTransactions.size() - 1); // remove last item
+		activeTransactions.remove(activeTransactions.size() - 1); // remove last
+																	// item
 		if (activeTransactions.size() == 0) {
 			connection.commit();
 			txnEnd();
@@ -109,7 +114,8 @@ public class TransactionManager {
 			return;
 		}
 
-		activeTransactions.remove(activeTransactions.size() - 1); // remove last item
+		activeTransactions.remove(activeTransactions.size() - 1); // remove last
+																	// item
 		if (activeTransactions.size() > 0) {
 			rollbackedInNestedTransaction++;
 		} else {
@@ -117,11 +123,10 @@ public class TransactionManager {
 			txnEnd();
 		}
 	}
-
 	/**
 	 * Stack traced information of active transactions.
 	 * 
-	 * @return 
+	 * @return
 	 */
 	public List<TransactionTraceInfo> getActiveTransactions() {
 		return activeTransactions;
@@ -131,7 +136,8 @@ public class TransactionManager {
 	 * Stack traced information of current transactions.
 	 * 
 	 * <p>
-	 * If current transaction doesn't exist, it returns {@code Optional.empty()}.
+	 * If current transaction doesn't exist, it returns {@code Optional.empty()}
+	 * .
 	 * </p>
 	 * 
 	 * @return
@@ -141,11 +147,14 @@ public class TransactionManager {
 			return Optional.empty();
 		}
 
-		return Optional.of(activeTransactions.get(activeTransactions.size() - 1));
+		return Optional
+				.of(activeTransactions.get(activeTransactions.size() - 1));
 	}
 
 	private void txnEnd() throws SQLException {
-		connection.setAutoCommit(originalAutoCommitStatus); // turn back to original auto-commit mode
+		connection.setAutoCommit(originalAutoCommitStatus); // turn back to
+															// original
+															// auto-commit mode
 
 		activeTransactions = new ArrayList<>();
 		rollbackedInNestedTransaction = 0;
