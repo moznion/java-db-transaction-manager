@@ -96,8 +96,9 @@ public class TransactionManager {
 					"Tried to commit but it had already rollbacked in nested transaction");
 		}
 
-		activeTransactions.remove(activeTransactions.size() - 1); // remove last
-																	// item
+		// remove a last item
+		activeTransactions.remove(activeTransactions.size() - 1);
+
 		if (activeTransactions.size() == 0) {
 			connection.commit();
 			txnEnd();
@@ -114,8 +115,9 @@ public class TransactionManager {
 			return;
 		}
 
-		activeTransactions.remove(activeTransactions.size() - 1); // remove last
-																	// item
+		// remove a last item
+		activeTransactions.remove(activeTransactions.size() - 1);
+
 		if (activeTransactions.size() > 0) {
 			rollbackedInNestedTransaction++;
 		} else {
@@ -152,9 +154,10 @@ public class TransactionManager {
 	}
 
 	private void txnEnd() throws SQLException {
-		connection.setAutoCommit(originalAutoCommitStatus); // turn back to
-															// original
-															// auto-commit mode
+		/*
+		 * turn back to original auto-commit mode
+		 */
+		connection.setAutoCommit(originalAutoCommitStatus);
 
 		activeTransactions = new ArrayList<>();
 		rollbackedInNestedTransaction = 0;
