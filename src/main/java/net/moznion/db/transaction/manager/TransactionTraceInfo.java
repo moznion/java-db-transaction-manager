@@ -1,8 +1,8 @@
 package net.moznion.db.transaction.manager;
 
 import lombok.Getter;
-
-import java.util.Optional;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * Represents the stack traced information for transaction.
@@ -12,6 +12,9 @@ import java.util.Optional;
  */
 @Getter
 public class TransactionTraceInfo {
+	final static String UNKNOWN_SYMBOL = "Unknown";
+	final static int UNKNOWN_NUM = -1;
+
 	private final String className;
 	private final String fileName;
 	private final String methodName;
@@ -19,46 +22,71 @@ public class TransactionTraceInfo {
 	private final long threadId;
 
 	/**
-	 * Construct traced information for transaction with optional {@code StackTraceElement} and thread ID.
+	 * Builder of traced information for transaction.
 	 * 
 	 * <p>
-	 * If optional {@code StackTraceElement} is null, when each fields will be "Unknown".
+	 * This class provides fluent accessors for each fields. You can specify the
+	 * field by method chaining.<br>
+	 * If field isn't specified it will be "Unknown" (when filed is String) or
+	 * {@code -1} (when field is num).
 	 * </p>
-	 * 
-	 * @param maybeStackTraceElement
-	 * @param threadId
 	 */
-	public TransactionTraceInfo(Optional<StackTraceElement> maybeStackTraceElement, long threadId) {
-		this.threadId = threadId;
+	@Accessors(fluent = true)
+	@Setter
+	public static class Builder {
+		private String className = UNKNOWN_SYMBOL;
+		private String fileName = UNKNOWN_SYMBOL;
+		private String methodName = UNKNOWN_SYMBOL;
+		private int lineNumber = UNKNOWN_NUM;
+		private long threadId = UNKNOWN_NUM;
 
-		if (maybeStackTraceElement.isPresent()) {
-			StackTraceElement stackTraceElement = maybeStackTraceElement.get();
-			className = stackTraceElement.getClassName();
-			fileName = stackTraceElement.getFileName();
-			methodName = stackTraceElement.getMethodName();
-			lineNumber = stackTraceElement.getLineNumber();
-		} else {
-			String unknownSimbol = "Unknown";
-			className = unknownSimbol;
-			fileName = unknownSimbol;
-			methodName = unknownSimbol;
-			lineNumber = -1;
+		/**
+		 * Construct new instance of TransactionTraceInfo based on builder.
+		 * 
+		 * @return new instance of TransactionTraceInfo
+		 */
+		public TransactionTraceInfo build() {
+			return new TransactionTraceInfo(this);
 		}
 	}
 
+	/**
+	 * Return new builder for this instance.
+	 * 
+	 * @return builder for this instance.
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	private TransactionTraceInfo(Builder b) {
+		if (b.className == null) {
+			className = UNKNOWN_SYMBOL;
+		} else {
+			className = b.className;
+		}
+
+		if (b.fileName == null) {
+			fileName = UNKNOWN_SYMBOL;
+		} else {
+			fileName = b.fileName;
+		}
+
+		if (b.methodName == null) {
+			methodName = UNKNOWN_SYMBOL;
+		} else {
+			methodName = b.methodName;
+		}
+
+		this.lineNumber = b.lineNumber;
+		this.threadId = b.threadId;
+	}
 	@Override
 	public String toString() {
-		return new StringBuilder()
-			.append("File Name: ")
-			.append(fileName)
-			.append(", Class Name: ")
-			.append(className)
-			.append(", Method Name: ")
-			.append(methodName)
-			.append(", Line Number: ")
-			.append(lineNumber)
-			.append(", Thread ID: ")
-			.append(threadId)
-			.toString();
+		return new StringBuilder().append("File Name: ").append(fileName)
+				.append(", Class Name: ").append(className)
+				.append(", Method Name: ").append(methodName)
+				.append(", Line Number: ").append(lineNumber)
+				.append(", Thread ID: ").append(threadId).toString();
 	}
 }

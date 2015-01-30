@@ -2,6 +2,8 @@ package net.moznion.db.transaction.manager;
 
 import lombok.Getter;
 
+import net.moznion.db.transaction.manager.TransactionTraceInfo.Builder;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -76,9 +78,19 @@ public class TransactionManager {
 				.getStackTraceElement(3);
 
 		Thread currentThread = Thread.currentThread();
-		TransactionTraceInfo transactionTraceInfo = new TransactionTraceInfo(
-				maybeStackTraceElement, currentThread.getId());
-		activeTransactions.add(transactionTraceInfo);
+
+		Builder ttiBuilder = TransactionTraceInfo.builder();
+		ttiBuilder.threadId(currentThread.getId());
+
+		if (maybeStackTraceElement.isPresent()) {
+			StackTraceElement stackTraceElement = maybeStackTraceElement.get();
+			ttiBuilder.className(stackTraceElement.getClassName())
+					.fileName(stackTraceElement.getFileName())
+					.methodName(stackTraceElement.getMethodName())
+					.lineNumber(stackTraceElement.getLineNumber());
+		}
+
+		activeTransactions.add(ttiBuilder.build());
 	}
 
 	/**
