@@ -73,9 +73,9 @@ public class TransactionManager {
 			connection.setAutoCommit(false); // Enable transaction
 		}
 
-		// `3` is magical, but it points the transaction stack
+		// `6` is really magical!! But it points the transaction stack
 		Optional<StackTraceElement> maybeStackTraceElement = StackTracer
-				.getStackTraceElement(3);
+				.getStackTraceElement(6);
 
 		Thread currentThread = Thread.currentThread();
 
