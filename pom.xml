@@ -3,7 +3,7 @@
 
 	<groupId>net.moznion</groupId>
 	<artifactId>db-transaction-manager</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>db-transaction-manager</name>
@@ -215,7 +215,7 @@
 		<url>https://github.com/moznion/java-db-transaction-manager</url>
 		<connection>scm:git:git@github.com:moznion/java-db-transaction-manager.git</connection>
 		<developerConnection>scm:git:git@github.com:moznion/java-db-transaction-manager.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>db-transaction-manager-1.0.1</tag>
 	</scm>
 
 	<licenses>
