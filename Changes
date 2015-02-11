@@ -4,7 +4,7 @@ Revision history of net.moznion|db-transaction-manager
 
     - Fix a risk of occurring NullPointerException
 
-1.0.0 2015-01-23T20:11:59+09+00
+1.0.0 2015-01-23T20:11:59+09:00
 
     - Original version
 
