@@ -20,3 +20,7 @@ hs_err_pid*
 /.classpath
 /.project
 /.settings/
+
+# idea
+/.idea/
+db-transaction-manager.iml
