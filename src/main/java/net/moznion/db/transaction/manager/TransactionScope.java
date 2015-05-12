@@ -18,10 +18,10 @@ public class TransactionScope implements AutoCloseable {
      * @throws SQLException
      */
     public TransactionScope(TransactionManager transactionManager) throws SQLException {
-        this.transactionManager = transactionManager;
         if (transactionManager == null) {
             throw new IllegalArgumentException("transactionManager must not be null");
         }
+        this.transactionManager = transactionManager;
 
         Boolean originalAutoCommitStatus = transactionManager.getOriginalAutoCommitStatus();
         if (originalAutoCommitStatus == null) {
