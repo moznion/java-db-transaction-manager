@@ -70,10 +70,14 @@ Description
 
 transaction-manager is a simply DB transaction manager.
 
-This package provides `begin`, `commit` and `rollback` function for transaction.
+This package provides `begin`, `commit`, `rollback` and `addEndHook` function for transaction.
 And also provides scope based transaction manager (scope based means it is with `try-with-resources` statement).
 
 This package is inspired by [DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager) from Perl.
+
+Please refer to the javadoc for details;
+
+[![javadoc.io][javadocio-image]][javadocio-url]
 
 Behavior of Nested Transactions
 --
