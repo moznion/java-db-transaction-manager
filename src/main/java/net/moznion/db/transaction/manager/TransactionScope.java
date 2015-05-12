@@ -58,6 +58,18 @@ public class TransactionScope implements AutoCloseable {
         isActioned = true;
     }
 
+    /**
+     * Add an end hook for transaction.
+     * <p>
+     * Registered end hooks run only when all of transactions were succeeded.
+     * Even one transaction was rollbacked, end hooks don't execute.
+     *
+     * @param r a processing for end hook
+     */
+    public void addEndHook(Runnable r) {
+        transactionManager.txnAddEndHook(r);
+    }
+
     @Override
     public void close() throws SQLException {
         List<TransactionTraceInfo> activeTransactions = transactionManager.getActiveTransactions();
