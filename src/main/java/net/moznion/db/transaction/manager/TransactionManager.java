@@ -171,14 +171,13 @@ public class TransactionManager {
             return Optional.empty();
         }
 
-        return Optional
-                .of(activeTransactions.get(activeTransactions.size() - 1));
+        return Optional.of(activeTransactions.get(activeTransactions.size() - 1));
     }
 
     private void txnEnd() throws SQLException {
         /*
          * turn back to original auto-commit mode
-		 */
+         */
         connection.setAutoCommit(originalAutoCommitStatus);
 
         activeTransactions = new ArrayList<>();
